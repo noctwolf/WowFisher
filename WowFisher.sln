@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32126.315
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WowFisher.Bot", "WowFisher.Bot\WowFisher.Bot.csproj", "{B441DAF7-1334-405B-B2CB-8298827A5617}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WowFisher.Wpf", "WowFisher.Wpf\WowFisher.Wpf.csproj", "{B1899119-42D1-490C-990C-24A6F9294862}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B441DAF7-1334-405B-B2CB-8298827A5617}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B441DAF7-1334-405B-B2CB-8298827A5617}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B441DAF7-1334-405B-B2CB-8298827A5617}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B441DAF7-1334-405B-B2CB-8298827A5617}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1899119-42D1-490C-990C-24A6F9294862}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1899119-42D1-490C-990C-24A6F9294862}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1899119-42D1-490C-990C-24A6F9294862}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1899119-42D1-490C-990C-24A6F9294862}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F7587B9A-F473-4A74-A4B6-ED381607F64E}
+	EndGlobalSection
+EndGlobal
