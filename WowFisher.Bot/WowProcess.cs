@@ -21,10 +21,8 @@ namespace WowFisher.Bot
         {
             if (!SetForegroundWindow(process.MainWindowHandle)) return;
             INPUT[] inputs = new INPUT[2];
-            inputs[0].type = INPUTTYPE.INPUT_KEYBOARD;
-            inputs[0].ki = new KEYBDINPUT { wVk = (ushort)key }; ;
-            inputs[1].type = INPUTTYPE.INPUT_KEYBOARD;
-            inputs[1].ki = new KEYBDINPUT { wVk = (ushort)key, dwFlags = KEYEVENTF.KEYEVENTF_KEYUP };
+            inputs[0] = new INPUT(0, (ushort)key);
+            inputs[1] = new INPUT(KEYEVENTF.KEYEVENTF_KEYUP, (ushort)key);
 
             if (SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT))) != inputs.Length)
             {
@@ -35,7 +33,13 @@ namespace WowFisher.Bot
         {
             if (!SetForegroundWindow(process.MainWindowHandle)) return;
             if (!SetCursorPos(point.X, point.Y)) return;
-            mouse_event(MOUSEEVENTF.MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF.MOUSEEVENTF_RIGHTUP, 0, 0, 0, (IntPtr)0);
+
+            INPUT[] inputs = new INPUT[1];
+            inputs[0] = new INPUT(MOUSEEVENTF.MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF.MOUSEEVENTF_RIGHTUP);
+
+            if (SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT))) != inputs.Length)
+            {
+            }
         }
 
         public static Process[] GetWowProcesses() => Process.GetProcesses().AsEnumerable().Where(f => f.IsWow()).ToArray();
