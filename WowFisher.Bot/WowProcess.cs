@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
 using static Vanara.PInvoke.User32;
 
 namespace WowFisher.Bot
@@ -27,7 +26,7 @@ namespace WowFisher.Bot
             inputs[1].type = INPUTTYPE.INPUT_KEYBOARD;
             inputs[1].ki = new KEYBDINPUT { wVk = (ushort)key, dwFlags = KEYEVENTF.KEYEVENTF_KEYUP };
 
-            if (SendInput((uint)inputs.Count(), inputs, Marshal.SizeOf(typeof(INPUT))) != inputs.Count())
+            if (SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT))) != inputs.Length)
             {
             }
         }
@@ -35,7 +34,7 @@ namespace WowFisher.Bot
         public static void MouseRightClick(this Process process, Point point)
         {
             if (!SetForegroundWindow(process.MainWindowHandle)) return;
-            //if (!SetCursorPos(point.X, point.Y)) return;
+            if (!SetCursorPos(point.X, point.Y)) return;
             mouse_event(MOUSEEVENTF.MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF.MOUSEEVENTF_RIGHTUP, 0, 0, 0, (IntPtr)0);
         }
 
