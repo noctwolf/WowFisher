@@ -32,8 +32,27 @@ namespace WowFisher.Bot
             return SendInput((uint)inputs.Count, inputs.ToArray(), Marshal.SizeOf(typeof(INPUT)));
         }
 
-
         public static Process[] GetWowProcesses() => Process.GetProcesses().AsEnumerable().Where(f => f.IsWow()).ToArray();
 
+        public static Bitmap GetBitmap(this Process process)
+        {
+            Debug.Assert(GetWindowRect(process.MainWindowHandle, out var rect));
+            Rectangle rectangle = new(rect.Location, rect.Size);
+            rectangle.Width /= 2;
+            rectangle.Height /= 2;
+            rectangle.Offset(rectangle.Width / 2, rectangle.Height / 2);
+            Bitmap bitmap = new(rectangle.Width, rectangle.Height);
+            bitmap.Tag = rectangle.Location;
+            using (var graphics = Graphics.FromImage(bitmap))
+                graphics.CopyFromScreen(rectangle.Location, Point.Empty, rectangle.Size);
+            return bitmap;
+        }
+
+        public static Point ClientToScreen(this Bitmap bitmap, Point point)
+        {
+            Point location = (Point)bitmap.Tag;
+            point.Offset(location);
+            return point;
+        }
     }
 }
