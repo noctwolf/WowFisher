@@ -17,30 +17,21 @@ namespace WowFisher.Bot
 
         public static bool IsWowClassic(this Process process) => process.ProcessName.Contains("Classic", StringComparison.OrdinalIgnoreCase);
 
-        public static void KeyPress(this Process process, ConsoleKey key)
-        {
-            if (!SetForegroundWindow(process.MainWindowHandle)) return;
-            INPUT[] inputs = new INPUT[2];
-            inputs[0] = new INPUT(0, (ushort)key);
-            inputs[1] = new INPUT(KEYEVENTF.KEYEVENTF_KEYUP, (ushort)key);
+        public static void KeyPress(this Process process, ConsoleKey consoleKey) => process.Send(new InputBuilder().AddKeyPress(consoleKey));
 
-            if (SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT))) != inputs.Length)
-            {
-            }
+        /// <summary>
+        /// 鼠标右键点击
+        /// </summary>
+        /// <param name="process"></param>
+        /// <param name="point">0到65535的归一化坐标</param>
+        public static void MouseRightClick(this Process process, Point point) => process.Send(new InputBuilder().AddMouseRightClick(point.X, point.Y));
+
+        public static uint Send(this Process process, InputBuilder inputs)
+        {
+            if (!SetForegroundWindow(process.MainWindowHandle)) return 0;
+            return SendInput((uint)inputs.Count, inputs.ToArray(), Marshal.SizeOf(typeof(INPUT)));
         }
 
-        public static void MouseRightClick(this Process process, Point point)
-        {
-            if (!SetForegroundWindow(process.MainWindowHandle)) return;
-            if (!SetCursorPos(point.X, point.Y)) return;
-
-            INPUT[] inputs = new INPUT[1];
-            inputs[0] = new INPUT(MOUSEEVENTF.MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF.MOUSEEVENTF_RIGHTUP);
-
-            if (SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT))) != inputs.Length)
-            {
-            }
-        }
 
         public static Process[] GetWowProcesses() => Process.GetProcesses().AsEnumerable().Where(f => f.IsWow()).ToArray();
 
