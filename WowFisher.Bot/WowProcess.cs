@@ -24,13 +24,11 @@ namespace WowFisher.Bot
         /// </summary>
         /// <param name="process"></param>
         /// <param name="point">0到65535的归一化坐标</param>
-        public static void MouseRightClick(this Process process, Point point) => process.Send(new InputBuilder().AddMouseRightClick(point.X, point.Y));
+        public static void MouseRightClick(this Process process, Point point) => 
+            process.Send(new InputBuilder().AddMouseRightClick(point.X, point.Y));
 
-        public static uint Send(this Process process, InputBuilder inputs)
-        {
-            if (!SetForegroundWindow(process.MainWindowHandle)) return 0;
-            return SendInput((uint)inputs.Count, inputs.ToArray(), Marshal.SizeOf(typeof(INPUT)));
-        }
+        public static uint Send(this Process process, InputBuilder inputs) => 
+            !SetForegroundWindow(process.MainWindowHandle) ? 0 : SendInput((uint)inputs.Count, inputs.ToArray(), Marshal.SizeOf(typeof(INPUT)));
 
         public static Process[] GetWowProcesses() => Process.GetProcesses().AsEnumerable().Where(f => f.IsWow()).ToArray();
 
