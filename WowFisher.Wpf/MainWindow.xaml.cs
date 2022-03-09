@@ -28,5 +28,16 @@ namespace WowFisher.Wpf
                 (int)(330 * 65535 / SystemParameters.VirtualScreenWidth),
                 (int)(330 * 65535 / SystemParameters.VirtualScreenHeight)));
         }
+
+        BotTask botTask = new(WowProcess.GetWowProcesses()[0]);
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            botTask.Start();
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            botTask.Stop();
+        }
     }
 }

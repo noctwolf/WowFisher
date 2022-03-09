@@ -21,5 +21,7 @@
             Width="{x:Static SystemParameters.VirtualScreenHeight}"
             TextWrapping="Wrap"
             VerticalAlignment="Top" Text="{Binding Source={x:Static SystemParameters.VirtualScreenHeight}}" />
+        <Button Content="Button" HorizontalAlignment="Left" Margin="106,10,0,0" VerticalAlignment="Top" Click="Button_Click_2"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="157,10,0,0" VerticalAlignment="Top" Click="Button_Click_3"/>
     </Grid>
 </Window>

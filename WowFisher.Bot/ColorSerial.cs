@@ -40,7 +40,7 @@ namespace WowFisher.Bot
             return min / (max - 20) > CloseRatio;
         }
 
-        private byte Exchange(ref byte location, byte value)
+        private static byte Exchange(ref byte location, byte value)
         {
             byte temp = location;
             location = value;

@@ -10,7 +10,6 @@ namespace WowFisher.Bot
 {
     public static class WowProcess
     {
-        private static readonly Random random = new();
         private static readonly List<string> names = new() { "Wow", "WowClassic", "Wow-64", "Notepad" };
 
         public static bool IsWow(this Process process) => names.Contains(process.ProcessName);
