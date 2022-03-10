@@ -24,9 +24,7 @@ namespace WowFisher.Wpf
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            WowProcess.GetWowProcesses()[0].MouseRightClick(new System.Drawing.Point(
-                (int)(330 * 65535 / SystemParameters.VirtualScreenWidth),
-                (int)(330 * 65535 / SystemParameters.VirtualScreenHeight)));
+            WowProcess.GetWowProcesses()[0].MouseRightClick(new System.Drawing.Point(330, 330));
         }
 
         Fisher botTask = new(WowProcess.GetWowProcesses()[0]);

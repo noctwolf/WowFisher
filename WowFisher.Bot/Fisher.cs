@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace WowFisher.Bot
         private CancellationTokenSource cts;
         private DateTime lureTime;
         private readonly TimeSpan lureDuration = TimeSpan.FromMinutes(10);
+        private readonly TimeSpan observeDuration = TimeSpan.FromSeconds(25);
 
         public event EventHandler<BobberEventArgs> Bobber;
 
@@ -90,9 +92,22 @@ namespace WowFisher.Bot
         private void Observe()
         {
             Debug.WriteLine($"Observe{Thread.CurrentThread.ManagedThreadId}");
-            Bitmap bitmap = Process.GetBitmap();
-            var bobber = GetBobber(bitmap);
-            Bobber?.Invoke(this, new BobberEventArgs { Image = bitmap, Location = bobber });
+            var observeTime = DateTime.Now;
+            SortedSet<int> bobber = new();
+            while (DateTime.Now - observeTime < observeDuration)
+            {
+                Bitmap bitmap = Process.GetBitmap();
+                Point point = GetBobber(bitmap);
+                if (!point.IsEmpty)
+                {
+                    Bobber?.Invoke(this, new BobberEventArgs { Image = bitmap, Location = point });
+                    if (bobber.Add(point.Y) && bobber.Count > 1 && bobber.Last() - bobber.First() > 5)
+                    {
+                        Loot(bitmap.ClientToScreen(point));
+                        break;
+                    }
+                }
+            }
         }
 
         private Point GetBobber(Bitmap bitmap)
@@ -114,6 +129,14 @@ namespace WowFisher.Bot
                  .OrderByDescending(f => f.Count())
                  .Select(f => f.Key)
                  .FirstOrDefault();
+        }
+
+        private void Loot(Point point)
+        {
+            Debug.WriteLine($"Loot{Thread.CurrentThread.ManagedThreadId}");
+            Task.Delay(1000).Wait(cts.Token);
+            //Process.MouseRightClick(point);
+            Task.Delay(1000).Wait(cts.Token);
         }
 
         public void Stop() => cts?.Cancel();

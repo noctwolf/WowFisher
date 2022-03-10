@@ -18,15 +18,12 @@ namespace WowFisher.Bot
 
         public static void KeyPress(this Process process, ConsoleKey consoleKey) => process.Send(new InputBuilder().AddKeyPress(consoleKey));
 
-        /// <summary>
-        /// 鼠标右键点击
-        /// </summary>
-        /// <param name="process"></param>
-        /// <param name="point">0到65535的归一化坐标</param>
-        public static void MouseRightClick(this Process process, Point point) => 
-            process.Send(new InputBuilder().AddMouseRightClick(point.X, point.Y));
+        public static void MouseRightClick(this Process process, Point point) =>
+            process.Send(new InputBuilder().AddMouseRightClick(
+                point.X * 65535 / GetSystemMetrics(SystemMetric.SM_CXVIRTUALSCREEN),
+                point.Y * 65535 / GetSystemMetrics(SystemMetric.SM_CYVIRTUALSCREEN)));
 
-        public static uint Send(this Process process, InputBuilder inputs) => 
+        public static uint Send(this Process process, InputBuilder inputs) =>
             !SetForegroundWindow(process.MainWindowHandle) ? 0 : SendInput((uint)inputs.Count, inputs.ToArray(), Marshal.SizeOf(typeof(INPUT)));
 
         public static Process[] GetWowProcesses() => Process.GetProcesses().AsEnumerable().Where(f => f.IsWow()).ToArray();
