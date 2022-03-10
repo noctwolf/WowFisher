@@ -32,12 +32,12 @@ namespace WowFisher.Bot
             return IsBig(r, g) && IsBig(r, b) && IsClose(g, b);
         }
 
-        private bool IsBig(byte big, byte small) => small / big < BigSmallRatio;
+        private bool IsBig(byte big, byte small) => small < BigSmallRatio * big;
 
         private bool IsClose(byte min, byte max)
         {
             if (min > max) min = Exchange(ref max, min);
-            return min / (max - 20) > CloseRatio;
+            return min > CloseRatio * (max - 20);
         }
 
         private static byte Exchange(ref byte location, byte value)

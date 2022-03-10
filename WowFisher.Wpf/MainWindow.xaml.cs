@@ -29,7 +29,7 @@ namespace WowFisher.Wpf
                 (int)(330 * 65535 / SystemParameters.VirtualScreenHeight)));
         }
 
-        BotTask botTask = new(WowProcess.GetWowProcesses()[0]);
+        Fisher botTask = new(WowProcess.GetWowProcesses()[0]);
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             botTask.Start();
