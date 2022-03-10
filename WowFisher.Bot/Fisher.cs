@@ -27,7 +27,7 @@ namespace WowFisher.Bot
 
         public bool IsRunning { get; private set; }
 
-        public async void Start()
+        public async Task StartAsync()
         {
             Debug.WriteLine($"Start{Thread.CurrentThread.ManagedThreadId}");
             Debug.Assert(!IsRunning);
@@ -39,13 +39,17 @@ namespace WowFisher.Bot
                 while (true)
                 {
                     cts.Token.ThrowIfCancellationRequested();
-                    await StartCore();
-                    await Task.Delay(1000, cts.Token);
+                    await Task.Run(StartCore);
+                    Debug.WriteLine($"await");
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.WriteLine("任务已取消");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                Debug.WriteLine($"{ex.GetType()}={ex.Message}");
             }
             finally
             {
@@ -53,16 +57,16 @@ namespace WowFisher.Bot
             }
         }
 
-        private async Task StartCore()
+        private void StartCore()
         {
             Debug.WriteLine($"StartCore{Thread.CurrentThread.ManagedThreadId}");
             cts.Token.ThrowIfCancellationRequested();
-            await Lure();
-            await Cast();
-            await Observe();
+            Lure();
+            Cast();
+            Observe();
         }
 
-        private async Task Lure()
+        private void Lure()
         {
             Debug.WriteLine($"Lure{Thread.CurrentThread.ManagedThreadId}");
             if (DateTime.Now - lureTime > lureDuration)
@@ -70,26 +74,25 @@ namespace WowFisher.Bot
                 Debug.WriteLine($"Lure");
                 lureTime = DateTime.Now;
                 Process.KeyPress(ConsoleKey.D4);//Lure
-                await Task.Delay(250);
+                Task.Delay(250).Wait();
                 Process.KeyPress(ConsoleKey.D5);//Rod
-                await Task.Delay(15000, cts.Token);
+                Task.Delay(15000).Wait(cts.Token);
             }
         }
 
-        private async Task Cast()
+        private void Cast()
         {
             Debug.WriteLine($"Cast{Thread.CurrentThread.ManagedThreadId}");
             Process.KeyPress(ConsoleKey.D1);
-            await Task.Delay(250);
+            Task.Delay(250).Wait();
         }
 
-        private async Task Observe()
+        private void Observe()
         {
             Debug.WriteLine($"Observe{Thread.CurrentThread.ManagedThreadId}");
             Bitmap bitmap = Process.GetBitmap();
             var bobber = GetBobber(bitmap);
             Bobber?.Invoke(this, new BobberEventArgs { Image = bitmap, Location = bobber });
-            await Task.Delay(0);
         }
 
         private Point GetBobber(Bitmap bitmap)
@@ -105,12 +108,12 @@ namespace WowFisher.Bot
                 return isMatch;
             }).ToList();
 
-            var p = points.SelectMany(f => points, (p1, p2) => new { p1, p2 })
-                .Where(f => Math.Abs(f.p1.X - f.p2.X) < 10 && Math.Abs(f.p1.Y - f.p2.Y) < 10)
-                .GroupBy(f => f.p1).OrderByDescending(f => f.Count()).Select(f => new { f.Key, Count = f.Count() }).ToList();
-            points = p.Select(f => f.Key).ToList();
-            Debug.WriteLine($"Bobber：{points.First()}");
-            return points.First();
+            return points.SelectMany(f => points, (p1, p2) => new { p1, p2 })
+                 .Where(f => Math.Abs(f.p1.X - f.p2.X) < 10 && Math.Abs(f.p1.Y - f.p2.Y) < 10)
+                 .GroupBy(f => f.p1)
+                 .OrderByDescending(f => f.Count())
+                 .Select(f => f.Key)
+                 .FirstOrDefault();
         }
 
         public void Stop() => cts?.Cancel();

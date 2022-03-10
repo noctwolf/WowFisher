@@ -30,9 +30,9 @@ namespace WowFisher.Wpf
         }
 
         Fisher botTask = new(WowProcess.GetWowProcesses()[0]);
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private async void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            botTask.Start();
+            await botTask.StartAsync();
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
