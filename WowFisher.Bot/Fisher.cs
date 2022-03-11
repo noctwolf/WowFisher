@@ -101,7 +101,7 @@ namespace WowFisher.Bot
                 if (!point.IsEmpty)
                 {
                     Bobber?.Invoke(this, new BobberEventArgs { Image = bitmap, Location = point });
-                    if (bobber.Add(point.Y) && bobber.Count > 1 && bobber.Last() - bobber.First() > 5)
+                    if (bobber.Add(point.Y) && bobber.Last() - bobber.First() > 5)
                     {
                         Loot(bitmap.ClientToScreen(point));
                         break;

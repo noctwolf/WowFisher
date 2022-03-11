@@ -9,19 +9,8 @@
     <Grid>
         <Button Content="Button" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="Button_Click"/>
         <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="58,10,0,0" VerticalAlignment="Top" Click="Button_Click_1"/>
-        <TextBlock
-            HorizontalAlignment="Left"
-            Margin="19,53,0,0"
-            Width="{x:Static SystemParameters.VirtualScreenWidth}"
-            TextWrapping="Wrap"
-            VerticalAlignment="Top" Text="{Binding Width, RelativeSource={RelativeSource Self}}" />
-        <TextBlock
-            HorizontalAlignment="Left"
-            Margin="19,90,0,0"
-            Width="{x:Static SystemParameters.VirtualScreenHeight}"
-            TextWrapping="Wrap"
-            VerticalAlignment="Top" Text="{Binding Source={x:Static SystemParameters.VirtualScreenHeight}}" />
         <Button Content="Button" HorizontalAlignment="Left" Margin="106,10,0,0" VerticalAlignment="Top" Click="Button_Click_2"/>
         <Button Content="Button" HorizontalAlignment="Left" Margin="157,10,0,0" VerticalAlignment="Top" Click="Button_Click_3"/>
+        <Image x:Name="image" HorizontalAlignment="Left" Height="100" Margin="31,71,0,0" VerticalAlignment="Top" Width="100"/>
     </Grid>
 </Window>

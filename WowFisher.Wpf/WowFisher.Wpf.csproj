@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Vikings.Wpf.Extensions" Version="1.0.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WowFisher.Bot\WowFisher.Bot.csproj" />
   </ItemGroup>
 
