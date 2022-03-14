@@ -29,14 +29,14 @@ namespace WowFisher.Bot
 
         public bool IsRunning { get; private set; }
 
-        public async Task StartAsync()
+        public async Task StartAsync(CancellationTokenSource cancellationTokenSource = null)
         {
             Debug.WriteLine($"Start{Thread.CurrentThread.ManagedThreadId}");
             Debug.Assert(!IsRunning);
             IsRunning = true;
             try
             {
-                cts = new CancellationTokenSource();
+                cts = cancellationTokenSource ?? new CancellationTokenSource();
                 Process.KeyPress(ConsoleKey.D5);//Rod
                 while (true)
                 {

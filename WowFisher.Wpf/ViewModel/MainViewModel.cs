@@ -18,10 +18,7 @@ namespace WowFisher.Wpf.ViewModel
         ImageSource imageSource;
 
         [GenerateCommand]
-        async Task StartAsync() => await fisher.StartAsync();
-
-        [GenerateCommand]
-        void Stop() => fisher.Stop();
+        async Task StartAsync() => await fisher.StartAsync(StartAsyncCommand.CancellationTokenSource);
 
         public MainViewModel()
         {
