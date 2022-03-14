@@ -96,12 +96,16 @@ namespace WowFisher.Bot
             SortedSet<int> bobber = new();
             while (DateTime.Now - observeTime < observeDuration)
             {
+                cts.Token.ThrowIfCancellationRequested();
                 Bitmap bitmap = Process.GetBitmap();
+                cts.Token.ThrowIfCancellationRequested();
                 Point point = GetBobber(bitmap);
+                cts.Token.ThrowIfCancellationRequested();
+                Bobber?.Invoke(this, new BobberEventArgs { Image = bitmap, Location = point });
+                Debug.WriteLine($"Bobber?.Invoke{Thread.CurrentThread.ManagedThreadId}");
                 if (!point.IsEmpty)
                 {
-                    Bobber?.Invoke(this, new BobberEventArgs { Image = bitmap, Location = point });
-                    if (bobber.Add(point.Y) && bobber.Last() - bobber.First() > 5)
+                    if (bobber.Add(point.Y) && bobber.Last() - bobber.First() > bitmap.Height * 0.02)
                     {
                         Loot(bitmap.ClientToScreen(point));
                         break;

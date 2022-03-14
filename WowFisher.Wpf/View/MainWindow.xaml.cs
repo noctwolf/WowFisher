@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using WowFisher.Bot;
 
-namespace WowFisher.Wpf
+namespace WowFisher.Wpf.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -26,23 +26,6 @@ namespace WowFisher.Wpf
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             WowProcess.GetWowProcesses()[0].MouseRightClick(new System.Drawing.Point(330, 330));
-        }
-
-        Fisher botTask = new(WowProcess.GetWowProcesses()[0]);
-        private async void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            botTask.Bobber += BotTask_Bobber;
-            await botTask.StartAsync();
-        }
-
-        private void BotTask_Bobber(object sender, BobberEventArgs e)
-        {
-            image.Source = e.Image.ToBitmapImage();
-        }
-
-        private void Button_Click_3(object sender, RoutedEventArgs e)
-        {
-            botTask.Stop();
         }
     }
 }
