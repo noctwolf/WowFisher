@@ -10,10 +10,10 @@
         <Grid.DataContext>
             <ViewModel:MainViewModel/>
         </Grid.DataContext>
+        <Image x:Name="image" HorizontalAlignment="Left"  VerticalAlignment="Top"  Source="{Binding ImageSource, Mode=OneWay}"/>
         <Button Content="Button" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="Button_Click"/>
         <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="58,10,0,0" VerticalAlignment="Top" Click="Button_Click_1"/>
         <Button Content="Button" HorizontalAlignment="Left" Margin="106,10,0,0" VerticalAlignment="Top" Command="{Binding StartAsyncCommand, Mode=OneWay}"/>
         <Button Content="Button" HorizontalAlignment="Left" Margin="157,10,0,0" VerticalAlignment="Top" Command="{Binding StartAsyncCommand.CancelCommand, Mode=OneWay}" />
-        <Image x:Name="image" HorizontalAlignment="Left" Height="100" Margin="31,71,0,0" VerticalAlignment="Top" Width="100" Source="{Binding ImageSource, Mode=OneWay}"/>
     </Grid>
 </Window>

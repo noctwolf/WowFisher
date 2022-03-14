@@ -94,12 +94,19 @@ namespace WowFisher.Bot
             Debug.WriteLine($"Observe{Thread.CurrentThread.ManagedThreadId}");
             var observeTime = DateTime.Now;
             SortedSet<int> bobber = new();
+            Stopwatch stopwatch = new();
             while (DateTime.Now - observeTime < observeDuration)
             {
+                Debug.WriteLine($"Bobber?.Invoke--{stopwatch.ElapsedMilliseconds}");
+                stopwatch.Restart();
                 cts.Token.ThrowIfCancellationRequested();
                 Bitmap bitmap = Process.GetBitmap();
+                Debug.WriteLine($"GetBitmap--{stopwatch.ElapsedMilliseconds}");
+                stopwatch.Restart();
                 cts.Token.ThrowIfCancellationRequested();
                 Point point = GetBobber(bitmap);
+                Debug.WriteLine($"GetBobber--{stopwatch.ElapsedMilliseconds}");
+                stopwatch.Restart();
                 cts.Token.ThrowIfCancellationRequested();
                 Bobber?.Invoke(this, new BobberEventArgs { Image = bitmap, Location = point });
                 Debug.WriteLine($"Bobber?.Invoke{Thread.CurrentThread.ManagedThreadId}");
@@ -125,7 +132,7 @@ namespace WowFisher.Bot
                 bool isMatch = ColorSerial.IsMatch(bitmap.GetPixel(f.X, f.Y));
                 if (isMatch) bitmap.SetPixel(f.X, f.Y, ColorSerial.IsRed ? Color.Red : Color.Blue);
                 return isMatch;
-            }).ToList();
+            }).Take(500).ToList();
 
             return points.SelectMany(f => points, (p1, p2) => new { p1, p2 })
                  .Where(f => Math.Abs(f.p1.X - f.p2.X) < 10 && Math.Abs(f.p1.Y - f.p2.Y) < 10)
