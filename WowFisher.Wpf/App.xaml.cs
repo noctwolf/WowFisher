@@ -15,7 +15,7 @@ namespace WowFisher.Wpf
     {
         public App()
         {
-            log4net.LogManager.GetLogger(typeof(App)).Debug(this);
+            log4net.LogManager.GetLogger(typeof(App)).Info(this);
         }
     }
 }

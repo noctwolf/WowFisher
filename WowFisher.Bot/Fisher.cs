@@ -15,7 +15,7 @@ namespace WowFisher.Bot
         private DateTime lureTime;
         private readonly TimeSpan lureDuration = TimeSpan.FromMinutes(10);
         private readonly TimeSpan observeDuration = TimeSpan.FromSeconds(25);
-        ILog log = LogManager.GetLogger(typeof(Fisher));
+        private readonly ILog log = LogManager.GetLogger(typeof(Fisher));
 
         public event EventHandler<BobberEventArgs> Bobber;
 
@@ -33,7 +33,7 @@ namespace WowFisher.Bot
 
         public async Task StartAsync(CancellationTokenSource cancellationTokenSource = null)
         {
-            log.Debug($"Enter");
+            using IDisposable _ = log.Method();
             Debug.Assert(!IsRunning);
             IsRunning = true;
             try
@@ -44,60 +44,56 @@ namespace WowFisher.Bot
                 {
                     cts.Token.ThrowIfCancellationRequested();
                     await Task.Run(StartCore);
-                    log.Debug($"await");
+                    log.Info($"await");
                 }
             }
             catch (OperationCanceledException)
             {
-                log.Debug("任务已取消");
+                log.Info("任务已取消");
             }
             catch (Exception ex)
             {
-                log.Debug("Task.Run", ex);
+                log.Info("Task.Run", ex);
             }
             finally
             {
                 IsRunning = false;
             }
-            log.Debug($"Exit");
         }
 
         private void StartCore()
         {
-            log.Debug($"Enter");
+            using IDisposable _ = log.Method();
             cts.Token.ThrowIfCancellationRequested();
             Lure();
             Cast();
             Observe();
-            log.Debug($"Exit");
         }
 
         private void Lure()
         {
-            log.Debug("Enter");
+            using IDisposable _ = log.Method();
             if (DateTime.Now - lureTime > lureDuration)
             {
-                log.Debug("Lure");
+                log.Info("Lure");
                 lureTime = DateTime.Now;
                 Process.KeyPress(ConsoleKey.D4);//Lure
                 Task.Delay(250).Wait();
                 Process.KeyPress(ConsoleKey.D5);//Rod
                 Task.Delay(15000).Wait(cts.Token);
             }
-            log.Debug("Exit");
         }
 
         private void Cast()
         {
-            log.Debug($"Enter");
+            using IDisposable _ = log.Method();
             Process.KeyPress(ConsoleKey.D1);
             Task.Delay(250).Wait();
-            log.Debug($"Exit");
         }
 
         private void Observe()
         {
-            log.Debug($"Enter");
+            using IDisposable _ = log.Method();
             var observeTime = DateTime.Now;
             SortedSet<int> bobber = new();
             Stopwatch stopwatch = new();
@@ -125,7 +121,6 @@ namespace WowFisher.Bot
                     }
                 }
             }
-            log.Debug($"Exit");
         }
 
         private Point GetBobber(Bitmap bitmap)
@@ -151,11 +146,10 @@ namespace WowFisher.Bot
 
         private void Loot(Point point)
         {
-            log.Debug($"Enter");
+            using IDisposable _ = log.Method();
             Task.Delay(1000).Wait(cts.Token);
             //Process.MouseRightClick(point);
             Task.Delay(1000).Wait(cts.Token);
-            log.Debug($"Exit");
         }
 
         public void Stop() => cts?.Cancel();
