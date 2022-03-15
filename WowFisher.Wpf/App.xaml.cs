@@ -13,5 +13,9 @@ namespace WowFisher.Wpf
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            log4net.LogManager.GetLogger(typeof(App)).Debug(this);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -14,6 +15,7 @@ namespace WowFisher.Bot
         private DateTime lureTime;
         private readonly TimeSpan lureDuration = TimeSpan.FromMinutes(10);
         private readonly TimeSpan observeDuration = TimeSpan.FromSeconds(25);
+        ILog log = LogManager.GetLogger(typeof(Fisher));
 
         public event EventHandler<BobberEventArgs> Bobber;
 
@@ -31,7 +33,7 @@ namespace WowFisher.Bot
 
         public async Task StartAsync(CancellationTokenSource cancellationTokenSource = null)
         {
-            Debug.WriteLine($"Start{Thread.CurrentThread.ManagedThreadId}");
+            log.Debug($"Enter");
             Debug.Assert(!IsRunning);
             IsRunning = true;
             try
@@ -42,74 +44,78 @@ namespace WowFisher.Bot
                 {
                     cts.Token.ThrowIfCancellationRequested();
                     await Task.Run(StartCore);
-                    Debug.WriteLine($"await");
+                    log.Debug($"await");
                 }
             }
             catch (OperationCanceledException)
             {
-                Debug.WriteLine("任务已取消");
+                log.Debug("任务已取消");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"{ex.GetType()}={ex.Message}");
+                log.Debug("Task.Run", ex);
             }
             finally
             {
                 IsRunning = false;
             }
+            log.Debug($"Exit");
         }
 
         private void StartCore()
         {
-            Debug.WriteLine($"StartCore{Thread.CurrentThread.ManagedThreadId}");
+            log.Debug($"Enter");
             cts.Token.ThrowIfCancellationRequested();
             Lure();
             Cast();
             Observe();
+            log.Debug($"Exit");
         }
 
         private void Lure()
         {
-            Debug.WriteLine($"Lure{Thread.CurrentThread.ManagedThreadId}");
+            log.Debug("Enter");
             if (DateTime.Now - lureTime > lureDuration)
             {
-                Debug.WriteLine($"Lure");
+                log.Debug("Lure");
                 lureTime = DateTime.Now;
                 Process.KeyPress(ConsoleKey.D4);//Lure
                 Task.Delay(250).Wait();
                 Process.KeyPress(ConsoleKey.D5);//Rod
                 Task.Delay(15000).Wait(cts.Token);
             }
+            log.Debug("Exit");
         }
 
         private void Cast()
         {
-            Debug.WriteLine($"Cast{Thread.CurrentThread.ManagedThreadId}");
+            log.Debug($"Enter");
             Process.KeyPress(ConsoleKey.D1);
             Task.Delay(250).Wait();
+            log.Debug($"Exit");
         }
 
         private void Observe()
         {
-            Debug.WriteLine($"Observe{Thread.CurrentThread.ManagedThreadId}");
+            log.Debug($"Enter");
             var observeTime = DateTime.Now;
             SortedSet<int> bobber = new();
             Stopwatch stopwatch = new();
             while (DateTime.Now - observeTime < observeDuration)
             {
-                Debug.WriteLine($"Bobber?.Invoke--{stopwatch.ElapsedMilliseconds}");
+                log.Debug($"while--{stopwatch.ElapsedMilliseconds}");
                 stopwatch.Restart();
                 cts.Token.ThrowIfCancellationRequested();
                 Bitmap bitmap = Process.GetBitmap();
-                Debug.WriteLine($"GetBitmap--{stopwatch.ElapsedMilliseconds}");
+                log.Debug($"GetBitmap--{stopwatch.ElapsedMilliseconds}");
                 stopwatch.Restart();
                 cts.Token.ThrowIfCancellationRequested();
                 Point point = GetBobber(bitmap);
-                Debug.WriteLine($"GetBobber--{stopwatch.ElapsedMilliseconds}");
+                log.Debug($"GetBobber--{stopwatch.ElapsedMilliseconds}");
                 stopwatch.Restart();
                 cts.Token.ThrowIfCancellationRequested();
                 Bobber?.Invoke(this, new BobberEventArgs { Image = bitmap, Location = point });
-                Debug.WriteLine($"Bobber?.Invoke{Thread.CurrentThread.ManagedThreadId}");
+                log.Debug($"Bobber?.Invoke--{stopwatch.ElapsedMilliseconds}");
                 if (!point.IsEmpty)
                 {
                     if (bobber.Add(point.Y) && bobber.Last() - bobber.First() > bitmap.Height * 0.02)
@@ -119,6 +125,7 @@ namespace WowFisher.Bot
                     }
                 }
             }
+            log.Debug($"Exit");
         }
 
         private Point GetBobber(Bitmap bitmap)
@@ -144,10 +151,11 @@ namespace WowFisher.Bot
 
         private void Loot(Point point)
         {
-            Debug.WriteLine($"Loot{Thread.CurrentThread.ManagedThreadId}");
+            log.Debug($"Enter");
             Task.Delay(1000).Wait(cts.Token);
             //Process.MouseRightClick(point);
             Task.Delay(1000).Wait(cts.Token);
+            log.Debug($"Exit");
         }
 
         public void Stop() => cts?.Cancel();
