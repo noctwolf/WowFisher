@@ -16,7 +16,7 @@ namespace WowFisher.Wpf.View
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var a  = this.All().OfType<Button>().ToList();
+            this.VisualAll().OfType<Button>().Where(f => (string)f.Content == "开始").ToList().ForEach(f => f.OnClick());
         }
     }
 }
