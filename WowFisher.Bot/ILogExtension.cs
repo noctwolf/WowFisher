@@ -1,5 +1,6 @@
 ﻿using log4net;
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace WowFisher.Bot
@@ -16,14 +17,16 @@ namespace WowFisher.Bot
         {
             private readonly string memberName;
             private readonly ILog log;
+            private readonly Stopwatch stopwatch = new();
 
             public Disposable(ILog log, string memberName)
             {
+                stopwatch.Start();
                 this.log = log;
                 this.memberName = memberName;
             }
 
-            public void Dispose() => log.Info($"{memberName} - Exit");
+            public void Dispose() => log.Info($"{memberName} - Exit - {stopwatch.ElapsedMilliseconds}ms");
         }
     }
 }

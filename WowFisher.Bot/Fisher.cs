@@ -96,22 +96,14 @@ namespace WowFisher.Bot
             using IDisposable _ = log.Method();
             var observeTime = DateTime.Now;
             SortedSet<int> bobber = new();
-            Stopwatch stopwatch = new();
             while (DateTime.Now - observeTime < observeDuration)
             {
-                log.Debug($"while--{stopwatch.ElapsedMilliseconds}");
-                stopwatch.Restart();
                 cts.Token.ThrowIfCancellationRequested();
                 Bitmap bitmap = Process.GetBitmap();
-                log.Debug($"GetBitmap--{stopwatch.ElapsedMilliseconds}");
-                stopwatch.Restart();
                 cts.Token.ThrowIfCancellationRequested();
                 Point point = GetBobber(bitmap);
-                log.Debug($"GetBobber--{stopwatch.ElapsedMilliseconds}");
-                stopwatch.Restart();
                 cts.Token.ThrowIfCancellationRequested();
                 Bobber?.Invoke(this, new BobberEventArgs { Image = bitmap, Location = point });
-                log.Debug($"Bobber?.Invoke--{stopwatch.ElapsedMilliseconds}");
                 if (!point.IsEmpty)
                 {
                     if (bobber.Add(point.Y) && bobber.Last() - bobber.First() > bitmap.Height * 0.02)
@@ -125,6 +117,7 @@ namespace WowFisher.Bot
 
         private Point GetBobber(Bitmap bitmap)
         {
+            using IDisposable _ = log.Method();
             var points = Enumerable.Range(0, bitmap.Height)
                 .SelectMany(f => Enumerable.Range(0, bitmap.Width), (y, x) => new Point(x, y))
                 .ToList();
@@ -148,6 +141,7 @@ namespace WowFisher.Bot
         {
             using IDisposable _ = log.Method();
             Task.Delay(1000).Wait(cts.Token);
+            log.Info($"Loot:{point}");
             //Process.MouseRightClick(point);
             Task.Delay(1000).Wait(cts.Token);
         }

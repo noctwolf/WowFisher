@@ -23,8 +23,12 @@ namespace WowFisher.Bot
                 point.X * 65535 / GetSystemMetrics(SystemMetric.SM_CXVIRTUALSCREEN),
                 point.Y * 65535 / GetSystemMetrics(SystemMetric.SM_CYVIRTUALSCREEN)));
 
-        public static uint Send(this Process process, InputBuilder inputs) =>
-            !SetForegroundWindow(process.MainWindowHandle) ? 0 : SendInput((uint)inputs.Count, inputs.ToArray(), Marshal.SizeOf(typeof(INPUT)));
+        public static uint Send(this Process process, InputBuilder inputs)
+        {
+            lock (names)
+                return !SetForegroundWindow(process.MainWindowHandle) ? 0 :
+                    SendInput((uint)inputs.Count, inputs.ToArray(), Marshal.SizeOf(typeof(INPUT)));
+        }
 
         public static Process[] GetWowProcesses() => Process.GetProcesses().AsEnumerable().Where(f => f.IsWow()).ToArray();
 
