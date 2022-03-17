@@ -96,17 +96,25 @@ namespace WowFisher.Bot
             using IDisposable _ = log.Method();
             var observeTime = DateTime.Now;
             SortedSet<int> bobber = new();
+            Point point = new();
+            bool first = true;
             while (DateTime.Now - observeTime < observeDuration)
             {
                 cts.Token.ThrowIfCancellationRequested();
                 Bitmap bitmap = Process.GetBitmap();
                 cts.Token.ThrowIfCancellationRequested();
-                Point point = GetBobber(bitmap);
+                point = GetBobber(bitmap, point);
                 cts.Token.ThrowIfCancellationRequested();
                 Bobber?.Invoke(this, new BobberEventArgs { Image = bitmap, Location = point });
                 if (!point.IsEmpty)
                 {
-                    if (bobber.Add(point.Y) && bobber.Last() - bobber.First() > bitmap.Height * 0.02)
+                    log.Debug($"point={point}");
+                    if (first) 
+                    {
+                        first = false;
+                        continue;
+                    }
+                    if (bobber.Add(point.Y) && bobber.Last() - bobber.First() > bitmap.Height * 0.015)
                     {
                         Loot(bitmap.ClientToScreen(point));
                         break;
@@ -115,12 +123,14 @@ namespace WowFisher.Bot
             }
         }
 
-        private Point GetBobber(Bitmap bitmap)
+        private Point GetBobber(Bitmap bitmap, Point point)
         {
             using IDisposable _ = log.Method();
             var points = Enumerable.Range(0, bitmap.Height)
                 .SelectMany(f => Enumerable.Range(0, bitmap.Width), (y, x) => new Point(x, y))
                 .ToList();
+            if (!point.IsEmpty)
+                points = points.Where(f => Math.Abs(f.X - point.X) < 20 && Math.Abs(f.Y - point.Y) < 20).ToList();
 
             points = points.Where(f =>
             {
@@ -132,6 +142,7 @@ namespace WowFisher.Bot
             return points.SelectMany(f => points, (p1, p2) => new { p1, p2 })
                  .Where(f => Math.Abs(f.p1.X - f.p2.X) < 10 && Math.Abs(f.p1.Y - f.p2.Y) < 10)
                  .GroupBy(f => f.p1)
+                 .Where(f => f.Count() > 10)
                  .OrderByDescending(f => f.Count())
                  .Select(f => f.Key)
                  .FirstOrDefault();
@@ -142,7 +153,7 @@ namespace WowFisher.Bot
             using IDisposable _ = log.Method();
             Task.Delay(1000).Wait(cts.Token);
             log.Info($"Loot:{point}");
-            //Process.MouseRightClick(point);
+            Process.MouseRightClick(point);
             Task.Delay(1000).Wait(cts.Token);
         }
 
