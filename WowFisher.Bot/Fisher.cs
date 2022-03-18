@@ -88,16 +88,15 @@ namespace WowFisher.Bot
         {
             using IDisposable _ = log.Method();
             Process.KeyPress(ConsoleKey.D1);
-            Task.Delay(250).Wait();
+            Task.Delay(1000).Wait(cts.Token);
         }
 
         private void Observe()
         {
             using IDisposable _ = log.Method();
             var observeTime = DateTime.Now;
-            SortedSet<int> bobber = new();
-            Point point = new();
-            bool first = true;
+            SortedSet<int> bobber = null;
+            Point point = Point.Empty;
             while (DateTime.Now - observeTime < observeDuration)
             {
                 cts.Token.ThrowIfCancellationRequested();
@@ -108,14 +107,11 @@ namespace WowFisher.Bot
                 Bobber?.Invoke(this, new BobberEventArgs { Image = bitmap, Location = point });
                 if (!point.IsEmpty)
                 {
-                    log.Debug($"point={point}");
-                    if (first) 
-                    {
-                        first = false;
-                        continue;
-                    }
+                    //log.Debug($"point={point}");
+                    if (bobber == null) { bobber = new(); continue; }//忽略掉第一次识别的点
                     if (bobber.Add(point.Y) && bobber.Last() - bobber.First() > bitmap.Height * 0.015)
                     {
+                        log.Debug(bobber);
                         Loot(bitmap.ClientToScreen(point));
                         break;
                     }
@@ -125,12 +121,9 @@ namespace WowFisher.Bot
 
         private Point GetBobber(Bitmap bitmap, Point point)
         {
-            using IDisposable _ = log.Method();
-            var points = Enumerable.Range(0, bitmap.Height)
-                .SelectMany(f => Enumerable.Range(0, bitmap.Width), (y, x) => new Point(x, y))
-                .ToList();
-            if (!point.IsEmpty)
-                points = points.Where(f => Math.Abs(f.X - point.X) < 20 && Math.Abs(f.Y - point.Y) < 20).ToList();
+            //using IDisposable _ = log.Method();
+            var points = point.IsEmpty ? Enumerable.Range(0, bitmap.Height).SelectMany(f => Enumerable.Range(0, bitmap.Width), (y, x) => new Point(x, y))
+                : Enumerable.Range(point.Y - 20, 40).SelectMany(f => Enumerable.Range(point.X - 20, 40), (y, x) => new Point(x, y));
 
             points = points.Where(f =>
             {
@@ -140,12 +133,12 @@ namespace WowFisher.Bot
             }).Take(500).ToList();
 
             return points.SelectMany(f => points, (p1, p2) => new { p1, p2 })
-                 .Where(f => Math.Abs(f.p1.X - f.p2.X) < 10 && Math.Abs(f.p1.Y - f.p2.Y) < 10)
-                 .GroupBy(f => f.p1)
-                 .Where(f => f.Count() > 10)
-                 .OrderByDescending(f => f.Count())
-                 .Select(f => f.Key)
-                 .FirstOrDefault();
+                .Where(f => Math.Abs(f.p1.X - f.p2.X) < 10 && Math.Abs(f.p1.Y - f.p2.Y) < 10)
+                .GroupBy(f => f.p1)
+                .Where(f => f.Count() > 10)
+                .OrderByDescending(f => f.Count())
+                .Select(f => f.Key)
+                .FirstOrDefault();
         }
 
         private void Loot(Point point)
