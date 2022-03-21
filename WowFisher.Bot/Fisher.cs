@@ -53,7 +53,7 @@ namespace WowFisher.Bot
             }
             catch (Exception ex)
             {
-                log.Info("Task.Run", ex);
+                log.Info("StartAsync", ex);
             }
             finally
             {
@@ -122,8 +122,14 @@ namespace WowFisher.Bot
         private Point GetBobber(Bitmap bitmap, Point point)
         {
             //using IDisposable _ = log.Method();
-            var points = point.IsEmpty ? Enumerable.Range(0, bitmap.Height).SelectMany(f => Enumerable.Range(0, bitmap.Width), (y, x) => new Point(x, y))
-                : Enumerable.Range(point.Y - 20, 40).SelectMany(f => Enumerable.Range(point.X - 20, 40), (y, x) => new Point(x, y));
+            Rectangle searchRect = new(Point.Empty, bitmap.Size);
+            if (!point.IsEmpty)//缩小搜索范围，提高帧率
+            {
+                Rectangle pointRect = new(point.X - 20, point.Y - 20, 41, 41);
+                if (searchRect.Contains(pointRect)) searchRect = pointRect;
+            }
+            var points = Enumerable.Range(searchRect.Y, searchRect.Height)
+                .SelectMany(f => Enumerable.Range(searchRect.X, searchRect.Width), (y, x) => new Point(x, y));
 
             points = points.Where(f =>
             {
