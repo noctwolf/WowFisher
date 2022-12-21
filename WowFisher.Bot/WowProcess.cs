@@ -36,9 +36,9 @@ namespace WowFisher.Bot
         {
             Debug.Assert(GetWindowRect(process.MainWindowHandle, out var rect));
             Rectangle rectangle = new(rect.Location, rect.Size);
-            rectangle.Width /= 2;
+            rectangle.Width /= 4;
             rectangle.Height /= 2;
-            rectangle.Offset(rectangle.Width / 2, rectangle.Height / 2);
+            rectangle.Offset(rectangle.Width / 2 * 3, rectangle.Height / 2);
             Bitmap bitmap = new(rectangle.Width, rectangle.Height);
             bitmap.Tag = rectangle.Location;
             using (var graphics = Graphics.FromImage(bitmap))
